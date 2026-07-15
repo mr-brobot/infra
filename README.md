@@ -1,17 +1,12 @@
-# infra
-
-Reusable AWS CDK constructs, published as the private-to-me Python package
-`brobot-infra` (module `brobot.infra`).
+# Infrastructure
 
 ## Constructs
 
 ### `TailscaleNode`
 
-An EC2 instance that joins a tailnet via [Tailscale Workload Identity
-Federation](https://tailscale.com/docs/features/workload-identity-federation) —
-no static auth keys are stored. The instance role is granted
-`sts:GetWebIdentityToken` scoped to a Tailscale audience; the Tailscale client
-exchanges that token for an auth key on first boot.
+An EC2 instance that joins a tailnet via [Tailscale Workload Identity Federation](https://tailscale.com/docs/features/workload-identity-federation).
+The instance role is granted `sts:GetWebIdentityToken` scoped to a Tailscale audience;
+the Tailscale client exchanges that token for an auth key on first boot.
 
 - Security group has **zero ingress** — Tailscale SSH is the only inbound path
 - IMDSv2 required, detailed (1-minute) CloudWatch metrics
