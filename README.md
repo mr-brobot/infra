@@ -10,12 +10,11 @@ the Tailscale client exchanges that token for an auth key on first boot.
 
 - Security group has **zero ingress** — Tailscale SSH is the only inbound path
 - IMDSv2 required, detailed (1-minute) CloudWatch metrics
-- Session Manager enabled as an emergency fallback
-- Idle auto-stop: CloudWatch alarm on `CPUUtilization` below a configurable
-  threshold for a configurable duration → native EC2 `stop` action
+- Session Manager enabled as an emergency fallback (TODO: disable this if it is purely a fallback)
+- Idle auto-stop: CloudWatch alarm on `CPUUtilization` below a configurable threshold for a configurable duration → native EC2 `stop` action
 
 ```python
-from brobot.infra.constructs import TailscaleNode, TailscaleNodeProps
+from brobot.infra import TailscaleNode, TailscaleNodeProps
 
 TailscaleNode(
     self,
@@ -33,17 +32,16 @@ TailscaleNode(
 
 ### `dlami_machine_image`
 
-Resolves the latest AWS Deep Learning AMI (Ubuntu 22.04, NVIDIA driver) via
-its SSM parameter — a convenient default `machine_image` for GPU/ML
-training and inference nodes.
+Resolves the latest AWS Deep Learning AMI (Ubuntu 22.04, NVIDIA driver) via its SSM parameter
+— a convenient default `machine_image` for GPU/ML training and inference nodes.
 
 ```python
-from brobot.infra.constructs import dlami_machine_image
+from brobot.infra import dlami_machine_image
 
 machine_image = dlami_machine_image()
 ```
 
-## Prerequisites (for `TailscaleNode`)
+## Prerequisites
 
 ### AWS Outbound Identity Federation
 
