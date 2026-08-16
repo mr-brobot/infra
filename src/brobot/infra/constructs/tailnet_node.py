@@ -1,7 +1,5 @@
-from __future__ import annotations
-
+import importlib.resources
 from dataclasses import dataclass
-from textwrap import dedent
 
 from aws_cdk import Duration
 from aws_cdk import aws_cloudwatch as cw
@@ -77,7 +75,14 @@ class TailnetNode(Construct):
             allow_all_outbound=True,
         )
 
-        init_script = assets.Asset(self, "InitScript", {"path": "scripts/userdata.sh"})
+        script_path = (
+            importlib.resources.files("brobot.infra") / "scripts" / "tailnet_join.sh"
+        )
+        init_script = assets.Asset(
+            self,
+            "InitScript",
+            path=str(script_path),
+        )
 
         user_data = ec2.UserData.for_linux()
         user_data.add_commands(
@@ -154,33 +159,3 @@ class TailnetNode(Construct):
         self.security_group = security_group
         self.instance = instance
         self.idle_alarm = idle_alarm
-
-    # TODO: move this to a .sh file and load, research aws cdk patterns for external scripts/artifacts like this
-    @staticmethod
-    def _user_data_commands() -> list[str]:
-        script = dedent(
-            """
-            set -euxo pipefail
-
-            hostnamectl set-hostname "$TAILSCALE_HOSTNAME"
-
-            if ! command -v tailscale >/dev/null 2>&1; then
-                curl -fsSL https://tailscale.com/install.sh | sh
-            fi
-
-            systemctl enable --now tailscaled
-
-            if ! tailscale status >/dev/null 2>&1; then
-                tailscale up \\
-                    --client-id="$TAILSCALE_CLIENT_ID?ephemeral=false&preauthorized=true" \\
-                    --audience="$TAILSCALE_AUDIENCE" \\
-                    --advertise-tags="$TAILSCALE_TAG" \\
-                    --hostname="$TAILSCALE_HOSTNAME" \\
-                    --ssh \\
-                    --accept-routes
-            fi
-
-            install -d -o ubuntu -g ubuntu /home/ubuntu/project
-            """
-        ).strip()
-        return script.splitlines()

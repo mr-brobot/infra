@@ -1,7 +1,7 @@
 [project]
 name = "brobot-infra"
 version = "0.1.0"
-description = "Reusable AWS CDK constructs"
+description = "AWS CDK constructs"
 requires-python = ">=3.12"
 dependencies = [
     "aws-cdk-lib>=2.265.0",
