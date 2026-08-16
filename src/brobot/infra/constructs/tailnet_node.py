@@ -12,7 +12,7 @@ from constructs import Construct
 
 
 @dataclass(frozen=True)
-class TailscaleNodeProps:
+class TailnetNodeProps:
     vpc: ec2.IVpc
     machine_image: ec2.IMachineImage
     instance_type: ec2.InstanceType
@@ -24,7 +24,7 @@ class TailscaleNodeProps:
     idle_evaluation_minutes: int = 30
 
 
-class TailscaleNode(Construct):
+class TailnetNode(Construct):
     """An EC2 instance that joins a tailnet via Workload Identity Federation.
 
     No static auth keys are stored. The instance role is granted
@@ -42,7 +42,7 @@ class TailscaleNode(Construct):
         self,
         scope: Construct,
         construct_id: str,
-        props: TailscaleNodeProps,
+        props: TailnetNodeProps,
     ) -> None:
         super().__init__(scope, construct_id)
 
