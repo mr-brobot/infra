@@ -4,11 +4,11 @@ from dataclasses import dataclass
 from textwrap import dedent
 
 from aws_cdk import Duration
-from aws_cdk import aws_s3_assets as assets
 from aws_cdk import aws_cloudwatch as cw
 from aws_cdk import aws_cloudwatch_actions as cw_actions
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_iam as iam
+from aws_cdk import aws_s3_assets as assets
 from constructs import Construct
 
 
@@ -77,7 +77,7 @@ class TailnetNode(Construct):
             allow_all_outbound=True,
         )
 
-        init_script = assets.Asset(self, "InitScript", { "path": "scripts/userdata.sh" })
+        init_script = assets.Asset(self, "InitScript", {"path": "scripts/userdata.sh"})
 
         user_data = ec2.UserData.for_linux()
         user_data.add_commands(

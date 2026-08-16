@@ -49,27 +49,11 @@ An EC2 instance that joins a tailnet via [Tailscale Workload Identity Federation
 The instance role is granted `sts:GetWebIdentityToken` scoped to a Tailscale audience;
 the Tailscale client exchanges that token for an auth key on first boot.
 
-- Security group has **zero ingress** — Tailscale SSH is the only inbound path
-- IMDSv2 required (`httpTokens: REQUIRED`), detailed (1-minute) CloudWatch metrics
-- Session Manager removed; Tailscale SSH handles all access (nodes are cattle, not pets)
+- **Zero ingress** — Tailscale SSH is the only inbound path
+- IMDSv2, detailed (1-minute) CloudWatch metrics
 - Idle auto-stop: CloudWatch alarm on `CPUUtilization` below a configurable threshold for a configurable duration → native EC2 `stop` action
 
-```python
-from brobot.infra import TailnetNode, TailnetNodeProps
-
-TailnetNode(
-    self,
-    "DevNode",
-    props=TailnetNodeProps(
-        vpc=vpc,
-        machine_image=machine_image,
-        instance_type=ec2.InstanceType("g6.2xlarge"),
-        hostname="my-project-gpu-dev",
-        tailscale_client_id="...",
-        tailscale_tag="tag:compute",
-    ),
-)
-```
+[Example](examples/tailnet_node.py)
 
 ### `dlami_machine_image`
 
