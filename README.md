@@ -37,6 +37,7 @@ Inference
 TODO: complete, add markdown diagram, mutagen, init/setup instructions
 Cheapest, simplest quickest to get started.
 Scales, though not entirely automated (and horizontal scaling is limited/complex?)
+Note: `TailnetNode` uses a single `ec2.Instance`. For production resilience and auto-restart, consider `ec2.AutoScalingGroup`.
 Meets all other needs
 Possible to default to spot and switch to on-demand as needed?
 
@@ -49,8 +50,8 @@ The instance role is granted `sts:GetWebIdentityToken` scoped to a Tailscale aud
 the Tailscale client exchanges that token for an auth key on first boot.
 
 - Security group has **zero ingress** — Tailscale SSH is the only inbound path
-- IMDSv2 required, detailed (1-minute) CloudWatch metrics
-- Session Manager enabled as an emergency fallback (TODO: disable this if it is purely a fallback)
+- IMDSv2 required (`httpTokens: REQUIRED`), detailed (1-minute) CloudWatch metrics
+- Session Manager removed; Tailscale SSH handles all access (nodes are cattle, not pets)
 - Idle auto-stop: CloudWatch alarm on `CPUUtilization` below a configurable threshold for a configurable duration → native EC2 `stop` action
 
 ```python
