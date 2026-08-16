@@ -6,7 +6,7 @@ from aws_cdk import aws_cloudwatch as cw
 from aws_cdk import aws_cloudwatch_actions as cw_actions
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_iam as iam
-from aws_cdk import aws_s3_assets as assets
+from aws_cdk.aws_s3_assets import Asset
 from constructs import Construct
 
 
@@ -78,7 +78,7 @@ class TailnetNode(Construct):
         script_path = (
             importlib.resources.files("brobot.infra") / "scripts" / "tailnet_join.sh"
         )
-        init_script = assets.Asset(
+        init_script = Asset(
             self,
             "InitScript",
             path=str(script_path),
@@ -125,6 +125,8 @@ class TailnetNode(Construct):
                 )
             ],
         )
+
+        init_script.grant_read(instance.role)
 
         period = Duration.minutes(5)
         evaluation_periods = max(

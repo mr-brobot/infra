@@ -5,3 +5,6 @@ scratch/
 __pycache__/
 *.pyc
 
+cdk.out/
+
+examples/**/cdk.context.json

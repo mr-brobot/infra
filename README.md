@@ -49,8 +49,8 @@ An EC2 instance that joins a tailnet via [Tailscale Workload Identity Federation
 The instance role is granted `sts:GetWebIdentityToken` scoped to a Tailscale audience;
 the Tailscale client exchanges that token for an auth key on first boot.
 
-- **Zero ingress** — Tailscale SSH is the only inbound path
-- IMDSv2, detailed (1-minute) CloudWatch metrics
+- **Zero ingress** — [Tailscale SSH](https://tailscale.com/docs/features/tailscale-ssh) is the only inbound path
+- **[Instance Metadata](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html) — detailed CloudWatch metrics
 - Idle auto-stop: CloudWatch alarm on `CPUUtilization` below a configurable threshold for a configurable duration → native EC2 `stop` action
 
 [Example](examples/tailnet_node.py)
@@ -94,6 +94,8 @@ This document uses the tag `tag:compute`.
 [Tailscale Workload Identity Federation](https://tailscale.com/docs/features/workload-identity-federation) requires an admin to establish trust between Tailscale an AWS identity.
 This requires the AWS Issuer URL and Subject format.
 
+TODO: automate the below
+
 Retrieve the AWS account issuer URL:
 
 ```sh
@@ -103,8 +105,10 @@ aws iam get-outbound-web-identity-federation-info | jq -r .IssuerIdentifier
 The [subject is the AWS role ARN](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_outbound_token_claims.html),
 so the subject format for the EC2 instance is of the following form:
 
+TODO: add stricter expected role name pattern
+
 ```
-arn:aws:iam:<region>:<accountid>:role/*-compute-role*
+arn:aws:iam::<accountid>:role/*Role*
 ```
 
 Only the `auth_keys` (write) scope is required, associated with `tag:compute`.
@@ -121,6 +125,8 @@ Pass it as `tailscale_client_id` in `TailnetNodeProps`.
 Open the [policy editor](https://console.tailscale.com/admin/acls/file).
 Merge into the the existing policy document:
 
+TODO: automate this part
+
 ```hujson
 {
   "tagOwners": {
@@ -131,7 +137,7 @@ Merge into the the existing policy document:
       "action": "accept",
       "src":    ["autogroup:member"],
       "dst":    ["tag:compute"],
-      "users":  ["ubuntu", "root"],
+      "users":  ["ubuntu", "ec2-user", "root"],
     },
   ],
 }
