@@ -1,4 +1,3 @@
-import importlib.resources
 from dataclasses import dataclass
 
 from aws_cdk import Duration
@@ -6,8 +5,9 @@ from aws_cdk import aws_cloudwatch as cw
 from aws_cdk import aws_cloudwatch_actions as cw_actions
 from aws_cdk import aws_ec2 as ec2
 from aws_cdk import aws_iam as iam
-from aws_cdk.aws_s3_assets import Asset
 from constructs import Construct
+
+from .userdata import UserDataBuilder
 
 
 @dataclass(frozen=True)
@@ -26,11 +26,9 @@ class TailnetNodeProps:
 class TailnetNode(Construct):
     """An EC2 instance that joins a tailnet via Workload Identity Federation.
 
-    The instance role is granted `sts:GetWebIdentityToken` scoped to the configured Tailscale audience.
-
-    Inbound access is via Tailscale SSH only; the security group has no ingress rules.
-
+    Inbound access via Tailscale SSH only.
     A CloudWatch alarm stops the instance when CPU is idle for the configured duration.
+    Assumes the provided machine image is an Amazon Linux 2023 AMI.
     """
 
     def __init__(
@@ -75,28 +73,18 @@ class TailnetNode(Construct):
             allow_all_outbound=True,
         )
 
-        script_path = (
-            importlib.resources.files("brobot.infra") / "scripts" / "tailnet_join.sh"
+        user_data = (
+            UserDataBuilder(self)
+            .with_tailnet(
+                hostname=props.hostname,
+                tailscale_client_id=props.tailscale_client_id,
+                tailscale_tag=props.tailscale_tag,
+                audience=audience,
+            )
+            .with_finch()
+            .grant_read(role)
+            .build()
         )
-        init_script = Asset(
-            self,
-            "InitScript",
-            path=str(script_path),
-        )
-
-        user_data = ec2.UserData.for_linux()
-        user_data.add_commands(
-            f"export TAILSCALE_HOSTNAME={props.hostname!r}",
-            f"export TAILSCALE_CLIENT_ID={props.tailscale_client_id!r}",
-            f"export TAILSCALE_AUDIENCE={audience!r}",
-            f"export TAILSCALE_TAG={props.tailscale_tag!r}",
-        )
-        user_data.add_s3_download_command(
-            bucket=init_script.bucket,
-            bucket_key=init_script.s3_object_key,
-            local_file="/tmp/userdata.sh",
-        )
-        user_data.add_commands("bash /tmp/userdata.sh")
 
         root_volume = props.root_volume or ec2.BlockDeviceVolume.ebs(
             128,
@@ -125,8 +113,6 @@ class TailnetNode(Construct):
                 )
             ],
         )
-
-        init_script.grant_read(instance.role)
 
         period = Duration.minutes(5)
         evaluation_periods = max(

@@ -1,43 +1,63 @@
 # Infrastructure
 
-This infrastructure aims to cultivate a relationship to powerful computing paradigms
-that develops deep understanding and facilitates unobstructed experimentation, customization, and control.
+This infrastructure aims to establish a relationship to powerful computing paradigms
+that cultivates deep understanding and facilitates unobstructed experimentation, customization, and control.
 Applications of special interest are language models and databases.
 
 ## Language Models
 
-This requires unobstructed access to models, which implies exclusive use of open weight models.
+To achieve the goals of this project, unobstructed access to models is required, implying exclusive use of open weight models.
 It also implicitly demands infrastructure that provides the computing resources necessary
 for experimentation, without being prohibitively burdensome or expensive.
+The target cost profile is to use only as much compute as is necessary,
+and only during the time it is needed.
+The target complexity is to facilitate a mental model that abstracts the separation in compute nodes,
+making remote compute indistinguishable from local compute.
+Local compute is preferred, and remote compute used only as/when needed, or explicitly commanded.
 
-There are many options for LLMs infrastructure, most of which force unacceptable compromises.
+There are many infrastructure options for LLM, most of which force unacceptable compromises.
 For example, many infrastructure providers obfuscate details necessary for complete understanding and control.
 These interfaces often prescribe a toolchain and lifecycle (e.g., hosted notebook interfaces).
 Control over models and computing interfaces preserves open experimention,
-along with allowing for the development of an interface that is both productive and sustainable.
+and preserves the option to develop and customize interfaces that are both productive and sustainable.
 
 This requires infrastructure that supports:
 
 - Scalable compute
 - Direct OS-level access
 - Cost monitors & controls
-- Secure and isolated
+- Modern security and isolation
 - Integration with local development tools
-- Support for model training and inference
+- Support for model inference and training
 
 ### Architecture
 
-Training
-- mutagen
-- create a dedicated instance
+Single-node, single-purpose EC2 instances.
+Cheapest option, simplest architecture, and allows for complete customization for each use-case.
+Two node categories under current consideration: Serving and Interactive
 
-Inference
-- llama.cpp? vllm?
+Serving nodes support coding agents and are defined in this repository.
+Small FIM models should continue to run locally.
+(TODO: design serving stack, vLLM/TGI/TensorRT-LLM/llama.cpp?)
+(TODO: design local/remote routing, possible to configure this via llama.cpp?)
+(TODO: design HF inference providers fallback, e.g., when node is unavailable or starting)
 
-TODO: complete, add markdown diagram, mutagen, init/setup instructions
+Interactive nodes (e.g., training, experimentation) defined in the repositories they support.
+
+- Local and remote filesystem fusion via [Mutagen project](https://mutagen.io/documentation/orchestration/projects/)
+- Remote devcontainer build/start via [Finch](https://runfinch.com/)
+- Local development, remote script execution
+- Local Jupyter notebook, remote execution
+
+TODO: add a simple mermaid diagram illustrating the current interactive compute architecture
+
+Future:
+
+- Tailnet training instances registered to and orchestrated by [PyTorch Monarch](https://meta-pytorch.org/monarch/stable/)
+
 Cheapest, simplest quickest to get started.
 Scales, though not entirely automated (and horizontal scaling is limited/complex?)
-Note: `TailnetNode` uses a single `ec2.Instance`. For production resilience and auto-restart, consider `ec2.AutoScalingGroup`.
+Consider `ec2.AutoScalingGroup`.
 Meets all other needs
 Possible to default to spot and switch to on-demand as needed?
 
@@ -54,17 +74,6 @@ the Tailscale client exchanges that token for an auth key on first boot.
 - Idle auto-stop: CloudWatch alarm on `CPUUtilization` below a configurable threshold for a configurable duration → native EC2 `stop` action
 
 [Example](examples/tailnet_node.py)
-
-### `dlami_machine_image`
-
-Resolves the latest AWS Deep Learning AMI (Ubuntu 22.04, NVIDIA driver) via its SSM parameter
-— a convenient default `machine_image` for GPU/ML training and inference nodes.
-
-```python
-from brobot.infra import dlami_machine_image
-
-machine_image = dlami_machine_image()
-```
 
 ## Prerequisites
 

@@ -20,4 +20,3 @@ if ! tailscale status >/dev/null 2>&1; then
         --accept-routes
 fi
 
-install -d -o ubuntu -g ubuntu /home/ubuntu/project

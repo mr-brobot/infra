@@ -1,4 +1,5 @@
 import os
+
 import aws_cdk as cdk
 from tailnet_node.stack import TailnetNodeStack
 
