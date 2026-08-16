@@ -4,15 +4,15 @@ version = "0.1.0"
 description = "Reusable AWS CDK constructs"
 requires-python = ">=3.12"
 dependencies = [
-    "aws-cdk-lib>=2.252.0",
-    "constructs>=10.6.0",
+    "aws-cdk-lib>=2.265.0",
+    "constructs>=10.8.1",
 ]
 
 [dependency-groups]
 dev = [
-    "pyrefly>=0.63.1",
-    "pytest>=9.0.3",
-    "ruff>=0.15.12",
+    "pyrefly>=1.2.0",
+    "pytest>=9.1.1",
+    "ruff>=0.16.3",
 ]
 
 [build-system]
