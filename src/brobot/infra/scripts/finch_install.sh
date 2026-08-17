@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 set -euxo pipefail
 
 # https://runfinch.com/docs/managing-finch/linux/installation/#amazon-linux

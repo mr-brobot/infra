@@ -82,6 +82,7 @@ class Tailnode(Construct):
                 audience=audience,
             )
             .with_finch()
+            .with_mutagen()
             .grant_read(role)
             .build()
         )

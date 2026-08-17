@@ -1,0 +1,31 @@
+beforeCreate:
+  - scripts/start.sh
+
+afterCreate:
+  - pwd # could do something useful here, e.g., build project
+
+afterPause:
+  - scripts/stop.sh
+
+beforeResume:
+  - scripts/start.sh
+
+afterTerminate:
+  - scripts/stop.sh
+
+commands:
+  pwd: ssh ec2-user@example pwd
+  deploy: scripts/deploy.sh
+  start: scripts/start.sh
+  stop: scripts/stop.sh
+
+sync:
+  defaults:
+    flushOnCreate: true
+    ignore:
+      vcs: true
+  code:
+    alpha: "."
+    beta: "ec2-user@example:~/tailnode"
+    mode: "two-way-resolved"
+

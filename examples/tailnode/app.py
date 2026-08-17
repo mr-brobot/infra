@@ -1,6 +1,7 @@
 import os
 
 import aws_cdk as cdk
+
 from tailnode.stack import TailnodeStack
 
 app = cdk.App()

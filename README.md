@@ -174,7 +174,7 @@ TODO: automate this part
       "action": "accept",
       "src":    ["autogroup:member"],
       "dst":    ["tag:compute"],
-      "users":  ["ubuntu", "ec2-user", "root"],
+      "users":  ["root", "ec2-user"],
     },
   ],
 }

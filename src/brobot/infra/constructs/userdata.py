@@ -75,5 +75,28 @@ class UserDataBuilder:
             asset.grant_read(grantee)
         return self
 
+    def with_mutagen(self, version: str = "v0.18.1") -> "UserDataBuilder":
+        self.user_data.add_commands(
+            f"export MUTAGEN_VERSION={version!r}",
+        )
+        script_name = "mutagen_install.sh"
+        source_path = SCRIPTS_DIR / script_name
+        target_path = Path("/") / "tmp" / script_name
+
+        mutagen_script = Asset(
+            self.scope,
+            "MutagenInstallScript",
+            path=str(source_path),
+        )
+        self.assets.append(mutagen_script)
+
+        self.user_data.add_s3_download_command(
+            bucket=mutagen_script.bucket,
+            bucket_key=mutagen_script.s3_object_key,
+            local_file=str(target_path),
+        )
+        self.user_data.add_commands(f"bash {target_path!s}")
+        return self
+
     def build(self) -> ec2.UserData:
         return self.user_data
