@@ -3,10 +3,10 @@ from aws_cdk import Stack
 from aws_cdk import aws_ec2 as ec2
 from constructs import Construct
 
-from brobot.infra import TailnetNode, TailnetNodeProps
+from brobot.infra import TailNode, TailNodeProps
 
 
-class TailnetNodeStack(Stack):
+class TailNodeStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
@@ -26,10 +26,10 @@ class TailnetNodeStack(Stack):
             self, "Tag", default="tag:compute", description="Tailscale tag"
         )
 
-        TailnetNode(
+        TailNode(
             self,
             "Node",
-            props=TailnetNodeProps(
+            props=TailNodeProps(
                 vpc=vpc,
                 machine_image=machine_image,
                 instance_type=ec2.InstanceType("t4g.micro"),

@@ -11,7 +11,7 @@ from .userdata import UserDataBuilder
 
 
 @dataclass(frozen=True)
-class TailnetNodeProps:
+class TailNodeProps:
     vpc: ec2.IVpc
     machine_image: ec2.IMachineImage
     instance_type: ec2.InstanceType
@@ -23,7 +23,7 @@ class TailnetNodeProps:
     idle_evaluation_minutes: int = 30
 
 
-class TailnetNode(Construct):
+class TailNode(Construct):
     """An EC2 instance that joins a tailnet via Workload Identity Federation.
 
     Inbound access via Tailscale SSH only.
@@ -35,7 +35,7 @@ class TailnetNode(Construct):
         self,
         scope: Construct,
         construct_id: str,
-        props: TailnetNodeProps,
+        props: TailNodeProps,
     ) -> None:
         super().__init__(scope, construct_id)
 

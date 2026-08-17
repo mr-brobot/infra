@@ -36,11 +36,15 @@ Single-node, single-purpose EC2 instances.
 Cheapest option, simplest architecture, and allows for complete customization for each use-case.
 Two node categories under current consideration: Serving and Interactive
 
+#### Serving Nodes
+
 Serving nodes support coding agents and are defined in this repository.
 Small FIM models should continue to run locally.
 (TODO: design serving stack, vLLM/TGI/TensorRT-LLM/llama.cpp?)
 (TODO: design local/remote routing, possible to configure this via llama.cpp?)
 (TODO: design HF inference providers fallback, e.g., when node is unavailable or starting)
+
+#### Interactive Nodes
 
 Interactive nodes (e.g., training, experimentation) defined in the repositories they support.
 
@@ -49,7 +53,31 @@ Interactive nodes (e.g., training, experimentation) defined in the repositories 
 - Local development, remote script execution
 - Local Jupyter notebook, remote execution
 
-TODO: add a simple mermaid diagram illustrating the current interactive compute architecture
+```mermaid
+graph TB
+    subgraph Local["Local"]
+        subgraph LD["Devcontainer"]
+            JK["Jupyter kernel"]
+            SC["scripts"]
+        end
+    end
+    subgraph EC2["EC2"]
+        subgraph RD["Devcontainer"]
+            RDEV["Remote Devcontainer"]
+        end
+    end
+    LD -->|Mutagen| RD
+    JK --> RD
+    SC --> RD
+```
+
+Expected project startup:
+
+1. Start the project devcontainer on local machine
+2. Ensure the tailnode is available (`cdk deploy`)
+3. Start Mutagen project session
+4. Run command to build/start the remote devcontainer (via `finch`)
+5. Connect via SSH / Mutagen forwarding / Jupyter remote kernel
 
 Future:
 
@@ -63,7 +91,7 @@ Possible to default to spot and switch to on-demand as needed?
 
 ## Constructs
 
-### `TailnetNode`
+### `TailNode`
 
 An EC2 instance that joins a tailnet via [Tailscale Workload Identity Federation](https://tailscale.com/docs/features/workload-identity-federation).
 The instance role is granted `sts:GetWebIdentityToken` scoped to a Tailscale audience;
@@ -73,7 +101,7 @@ the Tailscale client exchanges that token for an auth key on first boot.
 - **[Instance Metadata](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html) — detailed CloudWatch metrics
 - Idle auto-stop: CloudWatch alarm on `CPUUtilization` below a configurable threshold for a configurable duration → native EC2 `stop` action
 
-[Example](examples/tailnet_node.py)
+[Example](./examples/tailnode/tailnode/)
 
 ## Prerequisites
 
@@ -127,7 +155,7 @@ Only the `auth_keys` (write) scope is required, associated with `tag:compute`.
 - [Tailscale WIF docs](https://tailscale.com/docs/features/workload-identity-federation#register-new-nodes-using-workload-identity)
 
 Once the federated identity is created, a client ID will be generated.
-Pass it as `tailscale_client_id` in `TailnetNodeProps`.
+Pass it as `tailscale_client_id` in `TailNodeProps`.
 
 ### Update Tailscale ACL policy
 

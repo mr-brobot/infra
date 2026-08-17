@@ -1,4 +1,4 @@
-from brobot.infra.constructs.tailnet_node import TailnetNode, TailnetNodeProps
+from brobot.infra.constructs.tailnode import TailNode, TailNodeProps
 from brobot.infra.constructs.userdata import UserDataBuilder
 
-__all__ = ["TailnetNode", "TailnetNodeProps", "UserDataBuilder"]
+__all__ = ["TailNode", "TailNodeProps", "UserDataBuilder"]
