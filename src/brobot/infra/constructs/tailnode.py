@@ -11,7 +11,7 @@ from .userdata import UserDataBuilder
 
 
 @dataclass(frozen=True)
-class TailNodeProps:
+class TailnodeProps:
     vpc: ec2.IVpc
     machine_image: ec2.IMachineImage
     instance_type: ec2.InstanceType
@@ -23,7 +23,7 @@ class TailNodeProps:
     idle_evaluation_minutes: int = 30
 
 
-class TailNode(Construct):
+class Tailnode(Construct):
     """An EC2 instance that joins a tailnet via Workload Identity Federation.
 
     Inbound access via Tailscale SSH only.
@@ -35,7 +35,7 @@ class TailNode(Construct):
         self,
         scope: Construct,
         construct_id: str,
-        props: TailNodeProps,
+        props: TailnodeProps,
     ) -> None:
         super().__init__(scope, construct_id)
 
@@ -142,8 +142,3 @@ class TailNode(Construct):
         idle_alarm.add_alarm_action(
             cw_actions.Ec2Action(cw_actions.Ec2InstanceAction.STOP)
         )
-
-        self.role = role
-        self.security_group = security_group
-        self.instance = instance
-        self.idle_alarm = idle_alarm

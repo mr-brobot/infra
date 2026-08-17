@@ -1,3 +1,3 @@
-from brobot.infra.constructs import TailNode, TailNodeProps
+from brobot.infra.constructs import Tailnode, TailnodeProps
 
-__all__ = ["TailNode", "TailNodeProps"]
+__all__ = ["Tailnode", "TailnodeProps"]

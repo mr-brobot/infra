@@ -1,6 +1,6 @@
 # Example Tailnet Stack
 
-Creates a single `TailNode` instance in the default VPC.
+Creates a single `Tailnode` instance in the default VPC.
 
 ## Configuration
 

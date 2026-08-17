@@ -91,7 +91,7 @@ Possible to default to spot and switch to on-demand as needed?
 
 ## Constructs
 
-### `TailNode`
+### `Tailnode`
 
 An EC2 instance that joins a tailnet via [Tailscale Workload Identity Federation](https://tailscale.com/docs/features/workload-identity-federation).
 The instance role is granted `sts:GetWebIdentityToken` scoped to a Tailscale audience;
@@ -155,7 +155,7 @@ Only the `auth_keys` (write) scope is required, associated with `tag:compute`.
 - [Tailscale WIF docs](https://tailscale.com/docs/features/workload-identity-federation#register-new-nodes-using-workload-identity)
 
 Once the federated identity is created, a client ID will be generated.
-Pass it as `tailscale_client_id` in `TailNodeProps`.
+Pass it as `tailscale_client_id` in `TailnodeProps`.
 
 ### Update Tailscale ACL policy
 
