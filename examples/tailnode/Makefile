@@ -16,10 +16,10 @@ create:
 	mutagen project create
 
 start:
-	mutagen project start
+	mutagen project resume
 
 stop:
-	mutagen project stop
+	mutagen project pause
 
 terminate:
 	mutagen project terminate
